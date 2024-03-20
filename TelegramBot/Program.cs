@@ -45,7 +45,7 @@ namespace TelegramBot
             );
             var me = await botClient.GetMeAsync();
             Console.WriteLine($"Start listening for @{me.Username}");
-            Console.ReadLine();
+            Thread.Sleep(-1);
 
             // Send cancellation request to stop bot
             cts.Cancel();
