@@ -142,6 +142,10 @@ public class MessageHandler
                                                           "пришлите новый файл");
             TelegramInfoLogger.Instance.LogInfoFileProcessing("не были успешно обработаны", user);
         }
+        finally
+        {
+            stream.Close();
+        }
     }
 
     public async Task HandleSelectFileMessageAsync(ITelegramBotClient botClient, Message message,
@@ -308,8 +312,7 @@ public class MessageHandler
                 => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
-
-        Console.WriteLine(ErrorMessage);
+        TelegramInfoLogger.Instance.LogError(ErrorMessage);
         return Task.CompletedTask;
     }
 }

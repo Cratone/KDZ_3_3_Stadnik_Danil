@@ -60,4 +60,9 @@ public class TelegramInfoLogger
     {
         Program.FileProcessingLogger.LogInformation($"Данные пользователя с Id {user.Id} {text}.");
     }
+
+    public void LogError(string errorMessage)
+    {
+        Program.MessageHandlerLogger.LogError(errorMessage);
+    }
 }
