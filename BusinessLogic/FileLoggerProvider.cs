@@ -12,7 +12,7 @@ public class FileLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName)
         => new FileLogger(_path);
-    
-    
+
+
     public void Dispose() { }
 }

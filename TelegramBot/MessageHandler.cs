@@ -13,7 +13,7 @@ public class MessageHandler
     public Dictionary<long, User> Users = new Dictionary<long, User>();
 
     public Dictionary<UserState, Func<ITelegramBotClient, Message, CancellationToken, User, Task>> Handlers { get; set; }
-    
+
     public MessageHandler()
     {
         Handlers = new Dictionary<UserState, Func<ITelegramBotClient, Message, CancellationToken, User, Task>>
@@ -38,15 +38,13 @@ public class MessageHandler
             return;
 
         long chatId = message.Chat.Id;
-        Console.WriteLine(chatId);
         if (!Users.ContainsKey(chatId))
         {
             Users[chatId] = new User(chatId, message.From.Id);
-            // TODO Переделать
-            Users[chatId].Sender.SendMessageAsync(botClient, "Привет");
+            await Users[chatId].Sender.SendStartMessageAsync(botClient);
         }
         User user = Users[chatId];
-        TelegramInfoLogger.LogInfoGettingMessage(message, user);
+        TelegramInfoLogger.Instance.LogInfoGettingMessage(message, user);
         if (message.Text == "/start")
         {
             user.State = UserState.MainMenu;
@@ -54,22 +52,21 @@ public class MessageHandler
             return;
         }
 
-        if (message.Text == "/help")
+        if (message.Text == "/examples")
         {
-            // TODO Переделать
-            await user.Sender.SendMessageAsync(botClient, "Ну всё же и так понятно. Сам разберешься, я в тебя верю!");
+            await user.Sender.SendExampleFilesAsync(botClient);
         }
-        Handlers[Users[chatId].State]?.Invoke(botClient, message, cancellationToken, user);
+        Handlers[user.State]?.Invoke(botClient, message, cancellationToken, user);
     }
 
-    public async Task HandleStartMessageAsync(ITelegramBotClient botClient, Message message, 
+    public async Task HandleStartMessageAsync(ITelegramBotClient botClient, Message message,
         CancellationToken cancellationToken, User user)
     {
         user.State = UserState.MainMenu;
         user.Sender.ShowKeyboardAsync(botClient);
     }
 
-    public async Task HandleMainMenuMessageAsync(ITelegramBotClient botClient, Message message, 
+    public async Task HandleMainMenuMessageAsync(ITelegramBotClient botClient, Message message,
         CancellationToken cancellationToken, User user)
     {
         switch (message.Text)
@@ -78,7 +75,7 @@ public class MessageHandler
                 user.State = UserState.SendingFile;
                 await user.Sender.SendMessageAsync(botClient, "Пришлите файл с расширением csv или json");
                 break;
-            case "Взаимодейтсвие с файлом":
+            case "Взаимодействие с файлом":
                 if (user.Files.Count == 0)
                 {
                     await user.Sender.SendMessageAsync(botClient, "У вас нет загруженных файлов, чтобы работать с ними");
@@ -86,7 +83,7 @@ public class MessageHandler
                     break;
                 }
                 user.State = UserState.SelectFile;
-                string text = "Напишите имя нужного файла. Вот список имен доступных вам файлов:\n" + 
+                string text = "Напишите имя нужного файла. Вот список имен доступных вам файлов:\n" +
                               string.Join("\n", user.Files.Keys.ToList());
                 await user.Sender.SendMessageAsync(botClient, text);
                 break;
@@ -95,7 +92,7 @@ public class MessageHandler
         }
     }
 
-    public async Task HandleSendingFileMessageAsync(ITelegramBotClient botClient, Message message, 
+    public async Task HandleSendingFileMessageAsync(ITelegramBotClient botClient, Message message,
         CancellationToken cancellationToken, User user)
     {
         if (message.Document is not { } document)
@@ -131,17 +128,19 @@ public class MessageHandler
             await user.Sender.SendMessageAsync(botClient, $"Файл {document.FileName} успешно сохранен");
             user.State = UserState.MainMenu;
             await user.Sender.ShowKeyboardAsync(botClient);
-            TelegramInfoLogger.LogInfoFileProcessing("были успешно обработаны", user);
+            TelegramInfoLogger.Instance.LogInfoFileProcessing("были успешно обработаны", user);
         }
         catch (CsvHelper.CsvHelperException)
         {
-            await user.Sender.SendMessageAsync(botClient, "Данные в файле представлены в неправильном формате");
-            TelegramInfoLogger.LogInfoFileProcessing("не были успешно обработаны", user);
+            await user.Sender.SendMessageAsync(botClient, "Данные в файле представлены в неправильном формате, " +
+                                                          "пришлите новый файл");
+            TelegramInfoLogger.Instance.LogInfoFileProcessing("не были успешно обработаны", user);
         }
         catch (Newtonsoft.Json.JsonException)
         {
-            await user.Sender.SendMessageAsync(botClient, "Данные в файле представлены в неправильном формате");
-            TelegramInfoLogger.LogInfoFileProcessing("не были успешно обработаны", user);
+            await user.Sender.SendMessageAsync(botClient, "Данные в файле представлены в неправильном формате, " +
+                                                          "пришлите новый файл");
+            TelegramInfoLogger.Instance.LogInfoFileProcessing("не были успешно обработаны", user);
         }
     }
 
@@ -208,7 +207,7 @@ public class MessageHandler
                 break;
             case "District и HasDressingRoom":
                 user.State = UserState.SelectValuesForFilter;
-                user.SelectedFields = new List<string>() { "District", "HasDressing" };
+                user.SelectedFields = new List<string>() { "District", "HasDressingRoom" };
                 user.SelectedValues = new List<string>();
                 await user.Sender.SendMessageAsync(botClient, $"Введите нужное значение для поля {user.SelectedFields[0]}");
                 break;
@@ -226,14 +225,14 @@ public class MessageHandler
         }
 
         user.SelectedValues.Add(message.Text);
-        int n = user.SelectedFields.Count;
+        int n = user.SelectedValues.Count;
         if (n != user.SelectedFields.Count)
         {
             await user.Sender.SendMessageAsync(botClient, $"Введите нужное значение для поля {user.SelectedFields[n]}");
             return;
         }
 
-        for (int i = 0; i < user.SelectedFields.Count; i++)
+        for (int i = 0; i < n; i++)
         {
             user.SelectedFile = user.SelectedFile.Where(hockey => hockey[user.SelectedFields[i]] == user.SelectedValues[i]).ToList();
         }
@@ -295,7 +294,7 @@ public class MessageHandler
                 return;
         }
 
-        await user.Sender.SendFileFromStreamAsync(botClient, processor.Write(user.SelectedFile), 
+        await user.Sender.SendFileFromStreamAsync(botClient, processor.Write(user.SelectedFile),
             user.SelectedFileName + "." + message.Text.ToLower());
         user.State = UserState.MainMenu;
         await user.Sender.ShowKeyboardAsync(botClient);

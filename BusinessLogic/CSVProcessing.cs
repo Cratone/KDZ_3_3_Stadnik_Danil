@@ -5,7 +5,7 @@ using DataLayer;
 
 namespace BusinessLogic;
 
-public class CSVProcessing: FileProcessing
+public class CSVProcessing : FileProcessing
 {
     private string[] _russianHeader = new string[]
     {

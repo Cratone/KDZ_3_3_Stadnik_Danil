@@ -4,10 +4,11 @@ using Newtonsoft.Json;
 
 namespace BusinessLogic;
 
-public class JSONProcessing: FileProcessing
+public class JSONProcessing : FileProcessing
 {
     public override Stream Write(List<Hockey> data)
-    {var settings = new JsonSerializerSettings
+    {
+        var settings = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented
         };

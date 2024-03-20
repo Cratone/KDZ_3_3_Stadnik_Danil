@@ -14,7 +14,7 @@ public class User
     public List<string> SelectedFields { get; set; }
     public List<string> SelectedValues { get; set; }
 
-    public User() : this(0, 0) {}
+    public User() : this(0, 0) { }
 
     public User(long chatId, long id)
     {

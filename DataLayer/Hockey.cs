@@ -50,7 +50,7 @@ namespace DataLayer
         private string _geoData;
         private string _geoDataCenter;
         private string _geoArea;
-        
+
         [Name("global_id")]
         [JsonProperty("global_id")]
         public string Id
@@ -268,7 +268,7 @@ namespace DataLayer
             get => _servicesWinter;
             set => _servicesWinter = value ?? throw new ArgumentNullException(nameof(value));
         }
-        
+
         [Name("geoData")]
         [JsonProperty("geoData")]
         public string GeoData
@@ -276,7 +276,7 @@ namespace DataLayer
             get => _geoData;
             set => _geoData = value ?? throw new ArgumentNullException(nameof(value));
         }
-        
+
         [Name("geodata_center")]
         [JsonProperty("geodata_center")]
         public string GeoDataCenter
@@ -284,7 +284,7 @@ namespace DataLayer
             get => _geoDataCenter;
             set => _geoDataCenter = value ?? throw new ArgumentNullException(nameof(value));
         }
-        
+
         [Name("geoarea")]
         [JsonProperty("geoarea")]
         public string GeoArea

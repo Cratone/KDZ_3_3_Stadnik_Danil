@@ -11,7 +11,7 @@ namespace TelegramBot
         public static ILogger MessageHandlerLogger { get; set; }
         public static ILogger MessageSenderLogger { get; set; }
         public static ILogger FileProcessingLogger { get; set; }
-        
+
         public static async Task Main(string[] args)
         {
             var botClient = new TelegramBotClient("6997927085:AAElpTX2zaIJ4KOhf-w3VMnG-tS7vpLj2xQ");
@@ -20,7 +20,7 @@ namespace TelegramBot
             {
                 AllowedUpdates = Array.Empty<UpdateType>() // receive all update types except ChatMember related updates
             };
-            
+
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 // Добавление провайдера логирования в файл с настройками
