@@ -31,12 +31,11 @@ namespace TelegramBot
                     options.TimestampFormat = "HH:mm:ss ";
                 });
             });
-
             loggerFactory.AddFile(Path.Combine("..", "..", "..", "..", "var"));
             MessageHandler messageHandler = new MessageHandler();
             MessageHandlerLogger = loggerFactory.CreateLogger<MessageHandler>();
             MessageSenderLogger = loggerFactory.CreateLogger<MessageSender>();
-            FileProcessingLogger = loggerFactory.CreateLogger<FileProcessing>();
+            FileProcessingLogger = loggerFactory.CreateLogger<DataProcessing>();
             botClient.StartReceiving(
                 updateHandler: messageHandler.HandleUpdateAsync,
                 pollingErrorHandler: messageHandler.HandlePollingErrorAsync,

@@ -4,7 +4,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 using File = System.IO.File;
 
 namespace TelegramBot;
-
+/// <summary>
+/// Предствляет собой отправщик сообщений определенному пользователю.
+/// </summary>
 public class MessageSender
 {
     public User User { get; set; }
@@ -77,7 +79,7 @@ public class MessageSender
         switch (User.State)
         {
             case UserState.MainMenu:
-                await botClient.SendTextMessageAsync(User.ChatId, "Выберите пункт меню", replyMarkup: _mainMenuKeyboard);
+                await botClient.SendTextMessageAsync(User.ChatId, "Меню:", replyMarkup: _mainMenuKeyboard);
                 TelegramInfoLogger.Instance.LogInfoMenu("главное меню", User);
                 break;
             case UserState.ActionWithFile:

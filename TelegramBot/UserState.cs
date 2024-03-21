@@ -1,5 +1,7 @@
 ﻿namespace TelegramBot;
-
+/// <summary>
+/// Определяет возможные состояния пользователя.
+/// </summary>
 public enum UserState
 {
     Start,

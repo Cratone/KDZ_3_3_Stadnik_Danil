@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using CsvHelper.Configuration.Attributes;
+﻿using CsvHelper.Configuration.Attributes;
 using Newtonsoft.Json;
 
 namespace DataLayer
 {
+    /// <summary>
+    /// Представляет собой данные о катках.
+    /// </summary>
     public class Hockey
     {
         private string _id;
@@ -293,6 +290,10 @@ namespace DataLayer
             set => _geoArea = value ?? throw new ArgumentNullException(nameof(value));
         }
 
+        /// <summary>
+        /// Получение значения свойства по строке с его названием.
+        /// </summary>
+        /// <param name="nameField">Название нужного свойства.</param>
         [Ignore]
         public string this[string nameField]
         {

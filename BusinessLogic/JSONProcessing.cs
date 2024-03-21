@@ -3,9 +3,16 @@ using DataLayer;
 using Newtonsoft.Json;
 
 namespace BusinessLogic;
-
-public class JSONProcessing : FileProcessing
+/// <summary>
+/// Предаствляет собой обработчик json-данных.
+/// </summary>
+public class JSONProcessing : DataProcessing
 {
+    /// <summary>
+    /// Конвертирует список объектов в потом с json-данными.
+    /// </summary>
+    /// <param name="data">Список объектов.</param>
+    /// <returns>Поток с json-данными.</returns>
     public override Stream Write(List<Hockey> data)
     {
         var settings = new JsonSerializerSettings
@@ -20,7 +27,12 @@ public class JSONProcessing : FileProcessing
         stream.Position = 0;
         return stream;
     }
-
+    
+    /// <summary>
+    /// Конвертирует поток с json-данными в список объектов.
+    /// </summary>
+    /// <param name="stream">Потом с json-данными.</param>
+    /// <returns>Список объектов.</returns>
     public override List<Hockey> Read(Stream stream)
     {
         using (var jsonTextReader = new JsonTextReader(new StreamReader(stream)))

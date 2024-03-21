@@ -1,7 +1,9 @@
 ﻿using DataLayer;
 
 namespace TelegramBot;
-
+/// <summary>
+/// Представляет собой пользователя с информацией о нем.
+/// </summary>
 public class User
 {
     public long ChatId { get; set; }

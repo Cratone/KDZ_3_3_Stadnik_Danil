@@ -4,8 +4,10 @@ using CsvHelper.Configuration;
 using DataLayer;
 
 namespace BusinessLogic;
-
-public class CSVProcessing : FileProcessing
+/// <summary>
+/// Предаствляет собой обработчик csv-данных.
+/// </summary>
+public class CSVProcessing : DataProcessing
 {
     private string[] _russianHeader = new string[]
     {
@@ -22,6 +24,11 @@ public class CSVProcessing : FileProcessing
         "Приспособленность для занятий инвалидов", "Услуги предоставляемые в зимний период", "geoData",
         "geodata_center", "geoarea"
     };
+    /// <summary>
+    /// Конвертирует список объектов в потом с csv-данными.
+    /// </summary>
+    /// <param name="data">Список объектов.</param>
+    /// <returns>Поток с csv-данными.</returns>
     public override Stream Write(List<Hockey> data)
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -35,6 +42,7 @@ public class CSVProcessing : FileProcessing
             {
                 csv.WriteHeader<Hockey>();
                 csv.NextRecord();
+                // Добавляет русский заголовок.
                 foreach (string title in _russianHeader)
                 {
                     csv.WriteField(title);
@@ -42,6 +50,7 @@ public class CSVProcessing : FileProcessing
                 csv.NextRecord();
                 csv.WriteRecords(data);
                 csv.Flush();
+                // Преобразует csv в поток.
                 var stream = new MemoryStream();
                 var writer = new StreamWriter(stream);
                 writer.Write(stringWriter.ToString());
@@ -52,6 +61,11 @@ public class CSVProcessing : FileProcessing
         }
     }
 
+    /// <summary>
+    /// Конвертирует поток с cvs-данными в список объектов.
+    /// </summary>
+    /// <param name="stream">Потом с csv-данными.</param>
+    /// <returns>Список объектов.</returns>
     public override List<Hockey> Read(Stream stream)
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -63,8 +77,10 @@ public class CSVProcessing : FileProcessing
         StreamReader reader = new StreamReader(stream);
         using (var csv = new CsvReader(reader, config))
         {
+            // Считывает английский заголовок.
             csv.Read();
             csv.ReadHeader();
+            // Считывает русский заголовок.
             csv.Read();
             List<Hockey> data = csv.GetRecords<Hockey>().ToList();
             return data;
