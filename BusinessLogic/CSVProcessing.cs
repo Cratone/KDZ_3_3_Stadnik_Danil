@@ -70,7 +70,7 @@ public class CSVProcessing : DataProcessing
     {
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            PrepareHeaderForMatch = s => s.Header.Trim('"'),
+            PrepareHeaderForMatch = s => s.Header.Trim().Trim('"'),
             Delimiter = ";",
             BadDataFound = null
         };
