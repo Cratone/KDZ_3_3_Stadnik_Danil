@@ -1,4 +1,5 @@
-﻿using BusinessLogic;
+﻿using System.Runtime.CompilerServices;
+using BusinessLogic;
 using DataLayer;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -150,11 +151,24 @@ public class MessageHandler
         var fileId = document.FileId;
         string destinationFilePath = $"{user.ChatId}.file";
         await using Stream fileStream = System.IO.File.Create(destinationFilePath);
-        await botClient.GetInfoAndDownloadFileAsync(
-            fileId: fileId,
-            destination: fileStream,
-            cancellationToken: cancellationToken);
-        fileStream.Close();
+        // Обработка чрезвычайных ситуаций при попытке скачивания файла.
+        try
+        {
+            await botClient.GetInfoAndDownloadFileAsync(
+                fileId: fileId,
+                destination: fileStream,
+                cancellationToken: cancellationToken);
+        }
+        catch (ApiRequestException)
+        {
+            await user.Sender.SendMessageAsync(botClient, "Произошла ошибка при скачивании файла, возможно, " +
+                                                    "файл был слишком большой. Пришлите новый файл.");
+            return;
+        }
+        finally
+        {
+            fileStream.Close();
+        }
         FileStream stream = System.IO.File.OpenRead(destinationFilePath);
         // Попытка обработать данные файле.
         try

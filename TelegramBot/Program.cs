@@ -18,7 +18,7 @@ namespace TelegramBot
             using CancellationTokenSource cts = new();
             ReceiverOptions receiverOptions = new()
             {
-                AllowedUpdates = Array.Empty<UpdateType>() // receive all update types except ChatMember related updates
+                AllowedUpdates = Array.Empty<UpdateType>()
             };
 
             var loggerFactory = LoggerFactory.Create(builder =>
@@ -33,9 +33,11 @@ namespace TelegramBot
             });
             loggerFactory.AddFile(Path.Combine("..", "..", "..", "..", "var"));
             MessageHandler messageHandler = new MessageHandler();
+            // Создание логгеров.
             MessageHandlerLogger = loggerFactory.CreateLogger<MessageHandler>();
             MessageSenderLogger = loggerFactory.CreateLogger<MessageSender>();
             FileProcessingLogger = loggerFactory.CreateLogger<DataProcessing>();
+            // Запуск бота.
             botClient.StartReceiving(
                 updateHandler: messageHandler.HandleUpdateAsync,
                 pollingErrorHandler: messageHandler.HandlePollingErrorAsync,
@@ -46,7 +48,6 @@ namespace TelegramBot
             Console.WriteLine($"Start listening for @{me.Username}");
             Thread.Sleep(-1);
 
-            // Send cancellation request to stop bot
             cts.Cancel();
         }
     }

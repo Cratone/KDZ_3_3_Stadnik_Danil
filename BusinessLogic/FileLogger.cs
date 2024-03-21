@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 
 namespace BusinessLogic;
-
+/// <summary>
+/// Представляет собой логгер информации в файл.
+/// </summary>
 public class FileLogger : ILogger
 {
     private readonly string _filePath;
@@ -20,6 +22,14 @@ public class FileLogger : ILogger
         return true;
     }
 
+    /// <summary>
+    /// Логирует информацию в файл.
+    /// </summary>
+    /// <param name="logLevel">Уровень лога.</param>
+    /// <param name="eventId">Id события.</param>
+    /// <param name="state">Состояние.</param>
+    /// <param name="exception">Исключение.</param>
+    /// <param name="formatter">Конвертер в нужный формат.</param>
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception, string>? formatter)
     {
         if (formatter == null) return;
